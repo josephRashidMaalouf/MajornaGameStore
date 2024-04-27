@@ -1,0 +1,57 @@
+﻿@inject IAccountManagement Acct
+
+
+<nav class="navbar navbar-expand-md navbar-light bg-light">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/"><img src="https://majornastorage.blob.core.windows.net/images/GGLOGOTEXTnav.png" style="width: 80px;" alt="Majorna Gaming Logo" /></a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse container-fluid" id="navbarNavDropdown">
+            <ul class="navbar-nav">
+                <AuthorizeView Roles="Administrator">
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="adminproduct">
+                            <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span>
+                            <p class="h4">Produktkatalogen</p>
+                        </NavLink>
+                    </li>
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="AdminEventPage">
+                            <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> 
+                            <p class="h4">Events</p>
+                        </NavLink>
+                    </li>
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="#">
+                            <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span>
+                            <p class="h4">Användare</p>
+                        </NavLink>
+                    </li>
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="#">
+                            <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span>
+                            <p class="h4">Ordrar</p>
+                        </NavLink>
+                    </li>
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="#">
+                            <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span>
+                            <p class="h4">Kundvagnar</p>
+                        </NavLink>
+                    </li>
+                    <li class="nav-item">
+                        <button id="LogOutBtn" class="btn" @onclick="Acct.LogoutAsync">
+                            <Icon Name="IconName.BoxArrowLeft" Size="IconSize.x1"></Icon> 
+                        </button>
+                    </li>
+                </AuthorizeView>
+
+
+            </ul>
+        </div>
+
+    </div>
+
+</nav>
+

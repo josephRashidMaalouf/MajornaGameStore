@@ -1,0 +1,163 @@
+﻿@page "/AdminEventPage"
+@inject EventsViewModel ViewModel
+
+@if (_pageLoading)
+{
+    <p>Loading...</p>
+    <Spinner />
+}
+else
+{
+    <Button Color="ButtonColor.Success" @onclick="OnShowCreateModalClick">Skapa nytt Event</Button>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                <ul class="list-group">
+                    <Virtualize Items="ViewModel.Models">
+                        <li class="list-group-item mb-3">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h5>@context.Name</h5>
+                                    <p>@context.Description (@context.Price KR)</p>
+                                    <Button Color="ButtonColor.Info" @onclick="() => OnShowEditModalClick(context)">Redigera Event</Button>
+                                    <Button Color="ButtonColor.Danger" @onclick="() => ViewModel.DeleteEventInDb(context.Id)">Ta bort Event</Button>
+                                </div>
+                            </div>
+                        </li>
+                    </Virtualize>
+                </ul>
+            </div>
+        </div>
+    </div>
+}
+
+<Modal @ref="createModal" Title="EventMaker">
+    <BodyTemplate>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-md-12">
+                    <label style="color: black" for="EventName">Namn</label>
+                    <InputText type="text" class="form-control" id="EventName" placeholder="Skriv event namnet här" @bind-Value="newEvent.Name" />
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-md-12">
+                    <label style="color: black" for="EventDesc">Beskrivning</label>
+                    <InputTextArea class="form-control" id="EventDesc" placeholder="Skriv eventets beskrivning här" @bind-Value="newEvent.Description" />
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <label style="color: black" for="EventPrice">Pris</label>
+                    <InputNumber TValue="double" class="form-control" id="EventPrice" @bind-Value="newEvent.Price" />
+                </div>
+                <div class="col-md-6">
+                    <label style="color: black" for="Eventspots">Platser</label>
+                    <InputNumber TValue="int" class="form-control" id="Eventspots" @bind-Value="newEvent.SpotsLeft" />
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <label style="color: black" for="EventStart">Start Datum</label>
+                    <DateInput TValue="DateTime" class="form-control" id="EventStart" @bind-Value="newEvent.Start" Placeholder="Skriv in Start Datum" />
+                </div>
+                <div class="col-md-6">
+                    <label style="color: black" for="EventEnd">Slut Datum</label>
+                    <DateInput TValue="DateTime" class="form-control" id="EventEnd" @bind-Value="newEvent.End" Placeholder="Skriv in Slut Datum" />
+                </div>
+            </div>
+        </div>
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button id="Avbryt" Color="ButtonColor.Secondary" @onclick="OnHideModalClick">Avbryt</Button>
+        <Button id="Spara" Color="ButtonColor.Success" @onclick="@(async () => { await ViewModel.AddToDB(newEvent); await OnHideModalClick(); })">Spara Eventet</Button>
+    </FooterTemplate>
+</Modal>
+
+
+<Modal @ref="editModal" Title="EventUpdater">
+    <BodyTemplate>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-md-12">
+                    <label style="color: black" for="EditEventName">Namn</label>
+                    <InputText type="text" class="form-control" id="EditEventName" placeholder="Skriv event namnet här" @bind-Value="editEvent.Name" />
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-md-12">
+                    <label style="color: black" for="EditEventDesc">Beskrivning</label>
+                    <InputTextArea class="form-control" id="EditEventDesc" placeholder="Skriv eventets beskrivning här" @bind-Value="editEvent.Description" />
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <label style="color: black" for="EditEventPrice">Pris</label>
+                    <InputNumber TValue="double" class="form-control" id="EditEventPrice" @bind-Value="editEvent.Price" />
+                </div>
+                <div class="col-md-6">
+                    <label style="color: black" for="EditEventSpots">Platser</label>
+                    <InputNumber TValue="int" class="form-control" id="EditEventSpots" @bind-Value="editEvent.SpotsLeft" />
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <label style="color: black" for="EditEventStart">Start Datum</label>
+                    <DateInput TValue="DateTime" class="form-control" id="EditEventStart" @bind-Value="editEvent.Start" Placeholder="Skriv in Start Datum" />
+                </div>
+                <div class="col-md-6">
+                    <label style="color: black" for="EditEventEnd">Slut Datum</label>
+                    <DateInput TValue="DateTime" class="form-control" id="EditEventEnd" @bind-Value="editEvent.End" Placeholder="Skriv in Slut Datum" />
+                </div>
+            </div>
+        </div>
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button id="EditAvbryt" Color="ButtonColor.Secondary" @onclick="OnHideEditModalClick">Avbryt</Button>
+        <Button id="EditSpara" Color="ButtonColor.Primary" @onclick="@(async () => { await ViewModel.UpdateEventInDb(editEvent, editEvent.Id); await OnHideEditModalClick(); })">Spara Eventet</Button>
+    </FooterTemplate>
+</Modal>
+
+
+@code
+{
+    bool _pageLoading = true;
+    EventDto newEvent = new EventDto();
+    EventDto editEvent = new EventDto();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await ViewModel.OnInit();
+            _pageLoading = false;
+            StateHasChanged();
+        }
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private Modal createModal = default!;
+    private Modal editModal = default!;
+
+    private async Task OnShowCreateModalClick()
+    {
+        await createModal.ShowAsync();
+    }
+
+    private async Task OnHideModalClick()
+    {
+        await createModal.HideAsync();
+    }
+
+    private async Task OnShowEditModalClick(EventDto eventDto)
+    {
+        editEvent = eventDto;
+        await editModal.ShowAsync();
+    }
+
+    private async Task OnHideEditModalClick()
+    {
+        await editModal.HideAsync();
+    }
+}

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MajornaGameStore.Client</title>
+    <base href="/" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+    <link href="_content/Blazor.Bootstrap/blazor.bootstrap.css" rel="stylesheet" />
+
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/app.css" />
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <link href="MajornaGameStore.Client.styles.css" rel="stylesheet" />
+
+</head>
+
+<body>
+
+    <div id="app">
+        <svg class="loading-progress">
+            <circle r="40%" cx="50%" cy="50%" />
+            <circle r="40%" cx="50%" cy="50%" />
+        </svg>
+        <div class="loading-progress-text"></div>
+    </div>
+
+    <div id="blazor-error-ui">
+        An unhandled error has occurred.
+        <a href="" class="reload">Reload</a>
+        <a class="dismiss">🗙</a>
+    </div>
+
+    <style>
+        .kundtjanst-heading, .betal-heading, .gamegrottan-heading {
+            font-family: "Press Start 2P", cursive;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+    </style>
+
+
+    <footer class="text-center text-lg-start text-white my-footer"
+            style="background-color: rgba(30, 0, 100, .85)">
+        <!-- Grid container -->
+        <div class="container p-4 pb-0 footer-border">
+            <!-- Section: Links -->
+            <section>
+                <!-- Grid row -->
+                <div class="row">
+                    <!-- GameGrottan Majorna -->
+                    <div class="col-md-4 col-lg-4 col-xl-4 mx-auto mt-3 smaller-font">
+                        <h6 class="gamegrottan-heading">GameGrottan Majorna</h6>
+                        <p><i class="fas fa-home mr-3"></i> GameGrottan är en av Sveriges äldsta spelbutiker med över 100.000 olika produkter inom spel, prylar och LAN.</p>
+                    </div>
+
+                    <!-- Kundtjänst -->
+                    <div class="col-md-4 col-lg-4 col-xl-4 mx-auto mt-3 smaller-font">
+                        <h6 class="kundtjanst-heading">Kundtjänst</h6>
+                        <div>
+                            <button type="button" class="btn btn-link btn-white-text mb-2">Kontakta oss</button>
+                        </div>
+                        <div>
+                            <button type="button" class="btn btn-link btn-white-text mb-2">Besök vår butik</button>
+                        </div>
+                        <div>
+                            <button type="button" class="btn btn-link btn-white-text mb-2">Personuppgifter & Cookies</button>
+                        </div>
+                        <div>
+                            <button @onclick="NavigateToKopvillkor" class="btn btn-link btn-white-text mb-2">Köpvillkor</button>
+                        </div>
+                    </div>
+
+                    <!-- Betal- & fraktsätt -->
+                    <div class="col-md-4 col-lg-4 col-xl-4 mx-auto mt-3 smaller-font">
+                        <h6 class="betal-heading">Betal- & fraktsätt</h6>
+                        <div>
+                            <img src="https://majornastorage.blob.core.windows.net/images/logo-stripe.png" class="img-fluid" alt="Logo Stripe">
+                        </div>
+                    </div>
+                </div>
+                <!--Grid row-->
+            </section>
+            <!-- Section: Links -->
+
+            <hr class="my-3">
+
+            <!-- Section: Copyright -->
+            <section class="p-3 pt-0">
+                <div class="row d-flex align-items-center">
+                    <!-- Grid column -->
+                    <div class="col text-center">
+                        <!-- Copyright -->
+                        <div class="p-3 text-center smaller-font">
+                            © 2024 Copyright 3amos enterprises
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+            <!-- Section: Copyright -->
+        </div>
+        <!-- Grid container -->
+    </footer>
+
+    <script src="_framework/blazor.webassembly.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <!-- Add chart.js reference if chart components are used in your application. -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.0.1/chart.umd.js" integrity="sha512-gQhCDsnnnUfaRzD8k1L5llCCV6O9HN09zClIzzeJ8OJ9MpGmIlCxm+pdCkqTwqJ4JcjbojFr79rl2F1mzcoLMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <!-- Add chartjs-plugin-datalabels.min.js reference if chart components with data label feature is used in your application. -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js" integrity="sha512-JPcRR8yFa8mmCsfrw4TNte1ZvF1e3+1SdGMslZvmrzDYxS69J7J49vkFL8u6u8PlPJK+H3voElBtUCzaXj+6ig==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="_content/Blazor.Bootstrap/blazor.bootstrap.js"></script>
+    <script src="https://js.stripe.com/v3/"></script>
+    <script src="js/checkout.js"></script>
+
+
+</body>
+
+</html>

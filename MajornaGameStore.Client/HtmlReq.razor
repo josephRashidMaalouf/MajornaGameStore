@@ -1,0 +1,28 @@
+﻿@using System.Text.RegularExpressions
+@if (!string.IsNullOrWhiteSpace(HtmlFix))
+{
+    <div>
+        @RenderHtml(HtmlFix)
+    </div>
+}
+else
+{
+    <p>Error</p>
+}
+
+@code {
+    [Parameter]
+    public string HtmlFix { get; set; }
+
+  
+    private MarkupString RenderHtml(string htmlContent)
+    {
+        
+        htmlContent = htmlContent.Replace("\n", "<br>");
+
+       
+        htmlContent = Regex.Replace(htmlContent, @"<strong>(.*?)</strong>", @"<b>$1</b>");
+
+        return (MarkupString)htmlContent;
+    }
+}

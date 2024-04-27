@@ -1,0 +1,65 @@
+﻿
+@using MajornaGameStore.DataAccess.Entities
+@using MajornaGameStore.Shared.Dtos
+@using MajornaGameStore.Client.Services
+@using MajornaGameStore.Shared.Interfaces.ServiceInterfaces.ClientSide
+@using MajornaGameStore.Shared.Models.ViewModels
+@using Microsoft.EntityFrameworkCore.Infrastructure
+@inject NavigationManager NavManager
+@inject CartViewModel ViewModel
+
+
+
+@if (_pageLoading)
+{
+    <p>Laddar...</p>
+}
+else
+{
+    <ul class="list-group">
+        <Virtualize Items="ViewModel.Models">
+            <li class="list-group-item" style="display: flex; align-items: center;">
+                <InputNumber id="quantity" @bind-Value="context.Quantity"
+                             class="form-control" style="width: 70px; margin: 10px;" Enableminmax="true" Min="1" />
+                <p>@context.Quantity x @context.Name (@context.Price SEK) - @(context.Price * context.Quantity) SEK</p>
+                <button class="btn btn-danger" style="margin-left: 20px" @onclick="async () => await ViewModel.RemoveFromCart(context.Id)">Ta bort</button>
+            </li>
+        </Virtualize>
+        <li class="list-group-item">
+            <p>Totalt: Sek @ViewModel.Models.Sum(item => item.Price * item.Quantity)</p>
+            <button class="btn btn-success" @onclick="async () => await GoToPayment() ">Gå till betalning</button>
+
+        </li>
+    </ul>
+}
+  
+  
+
+
+@code {
+
+    bool _pageLoading = true;
+    string _checkoutString = string.Empty;
+    async Task GoToPayment()
+    {
+        _checkoutString = await ViewModel.GoToPayment();
+        NavManager.NavigateTo(_checkoutString);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await ViewModel.OnInit();
+            _pageLoading = false;
+            StateHasChanged();
+
+        }
+    }
+
+   
+
+    bool _contentLoading = true;
+    
+
+}

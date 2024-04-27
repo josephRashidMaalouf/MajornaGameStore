@@ -1,0 +1,62 @@
+﻿
+<div class="container-fluid">
+    <div class="logo">
+        <img src="Images/MAJORNA-GAMING.png" alt="Majorna Gaming Logo" style="width:300px;" />
+    </div>
+    <div class="top-row ps-3 navbar navbar-dark">
+        <a class="navbar-brand" href=""></a>
+        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </div>
+</div>
+
+<style>
+    .nav-link {
+        font-family: "Press Start 2P";
+    }
+</style>
+<header>
+    <div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
+        <nav class="flex-column">
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                    <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Hem
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="products">
+                    <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Produkter
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="eventandlan">
+                    <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Event/LAN
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="about">
+                    <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Om oss
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="Cart">
+                    <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Kundvagn
+                </NavLink>
+
+            </div>
+        </nav>
+    </div>
+</header>
+
+
+@code {
+    private bool collapseNavMenu = true;
+
+    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+}

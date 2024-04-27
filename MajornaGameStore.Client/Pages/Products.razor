@@ -1,0 +1,96 @@
+﻿@page "/products"
+@using MajornaGameStore.Shared.Dtos
+@using System.Formats.Tar
+@using MajornaGameStore.Client.Services
+@using MajornaGameStore.Shared.Interfaces
+@using MajornaGameStore.Shared.Models.ViewModels
+@inject ProductViewModel ViewModel
+@inject NavigationManager NavManager
+
+<style>
+    body {
+        background-image: url(https://majornastorage.blob.core.windows.net/images/344351.jpg);
+    }
+</style>
+<PageTitle>Products</PageTitle>
+
+<input id="GameSearch" type="text" @bind="searchText" placeholder="Sök efter Spel..." />
+<Button id="updateList" Color="ButtonColor.Info" @onclick="UpdateFilteredProducts">Sök</Button>
+
+@if (_contentLoading)
+{
+    <p>Loading...</p>
+    <Spinner />
+
+}
+else
+{
+    <Toasts class="p-3" Messages="messages" AutoHide="true" Delay="3000" Placement="ToastsPlacement.TopRight" />
+    <div class="row" style="display: flex; flex-wrap: wrap;">
+        @foreach (var product in filteredProducts)
+        {
+            <div class="col-md-3" style="flex: 0 0 25%;">
+                <div class="item-container" style="margin-bottom: 65px">
+                    <div class="item-image-wrapper">
+                        <img src="@product.ImageLink" class="item-image" style="width: 100%; height: auto;" @onclick="@(async () => GoToDetailsAsync(product.Id))" />
+                    </div>
+
+                    <div class="item-name">
+                        <h5><a>@product.Name</a></h5>
+                        <div class="item-price" style="margin-left: 5px">Sek @(product.Price)</div>
+                        <button class="btn btn-success" @onclick="@(async () => { await ViewModel.AddToCartAsync(product, 1); ShowMessage(ToastType.Success); })">
+                            Lägg Till I Kundvagn
+                        </button>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@code
+{
+    bool _contentLoading = true;
+    string searchText = "";
+    List<ProductDto> filteredProducts;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await ViewModel.OnInit();
+            UpdateFilteredProducts();
+            _contentLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task GoToDetailsAsync(int Id)
+    {
+        NavManager.NavigateTo($"/productDetail/{Id}");
+    }
+
+    List<ToastMessage> messages = new List<ToastMessage>();
+
+    private void ShowMessage(ToastType toastType) => messages.Add(CreateToastMessage(toastType));
+
+    private ToastMessage CreateToastMessage(ToastType toastType)
+        => new ToastMessage
+            {
+                Type = toastType,
+                HelpText = $"{DateTime.Now}",
+                Message = $"Produkt tillagd i kundvagn!",
+            };
+
+    private void UpdateFilteredProducts()
+    {
+        if (string.IsNullOrWhiteSpace(searchText))
+        {
+            filteredProducts = ViewModel.Models;
+        }
+        else
+        {
+            filteredProducts = ViewModel.Models.Where(p => p.Name.ToLower().Contains(searchText.ToLower())).ToList();
+        }
+    }
+}

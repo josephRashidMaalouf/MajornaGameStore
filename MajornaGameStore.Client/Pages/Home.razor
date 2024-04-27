@@ -1,0 +1,54 @@
+﻿@page "/"
+
+<div class="container text-center">
+    <h1>Välkommen till GAMEGROTTAN</h1>
+</div>
+<style>
+    h1 {
+        font-family: "Press Start 2P", sans-serif;
+    }
+
+    .carousel {
+        max-width: 600px; /* Ändra bredden till önskad storlek */
+        margin: auto; /* Centrera karusellen horisontellt */
+        
+    }
+
+    .carousel-inner {
+        max-width: 600px; /* Ändra bredden till önskad storlek */
+        margin: auto; /* Centrera bilderna horisontellt */
+    }
+
+    .carousel-item img {
+        max-height: 350px; /* Ändra höjden till önskad storlek */
+        object-fit: contain; /* Bevara proportioner */
+        margin: auto; /* Centrera bilden horisontellt */
+        background-color: black; /* Svart bakgrundsfärg */
+    }
+</style>
+<div id="carouselExampleIndicators" class="carousel slide">
+    <div class="carousel-indicators">
+        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
+        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
+    </div>
+    <div class="carousel-inner">
+        <div class="carousel-item active">
+            <img src="https://majornastorage.blob.core.windows.net/images/GGLANHome.png" class="d-block w-100 img-thumbnail" alt="...">
+        </div>
+        <div class="carousel-item">
+            <img src="https://majornastorage.blob.core.windows.net/images/GGREAHome.png" class="d-block w-100 img-thumbnail" alt="...">
+        </div>
+        <div class="carousel-item">
+            <img src="https://majornastorage.blob.core.windows.net/images/GGNewsHome.png" class="d-block w-100 img-thumbnail" alt="...">
+        </div>
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+    </button>
+</div>

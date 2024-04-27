@@ -1,0 +1,47 @@
+﻿@page "/kontaktaoss"
+@inject NavigationManager NavigationManager
+
+<div class="container text-center">
+    <h3>Kontakta oss</h3>
+
+    <div class="row">
+        <div class="col-md-4">
+            <i class="bi bi-house"></i> Adress
+            <p>Ebbe Lieberathsgatan 18C<br>412 65 Göteborg</p>
+        </div>
+        <div class="col-md-4">
+            <i class="bi bi-telephone"></i> Kontakt
+            <p>Telefon: 0707-001337<br>Email: info@gamegrottan.se</p>
+        </div>
+        <div class="col-md-4">
+            <i class="bi bi-clock"></i> Svarstider
+            <p>Mån – Tor: 10:00 – 18.00<br>Avvikande tider vid storhelger</p>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <h3>Kontakta oss</h3>
+
+    <form action="skicka_email.php" method="post">
+        <div class="form-group">
+            <label for="namn">Namn:</label>
+            <input type="text" id="namn" name="namn" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="email">E-postadress:</label>
+            <input type="email" id="email" name="email" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="meddelande">Meddelande:</label>
+            <textarea id="meddelande" name="meddelande" class="form-control" rows="4" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Skicka</button>
+    </form>
+</div>
+
+
+
+@code {
+
+}

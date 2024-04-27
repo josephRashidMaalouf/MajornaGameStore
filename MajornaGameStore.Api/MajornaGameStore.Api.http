@@ -1,0 +1,6 @@
+@MajornaGameStore.Api_HostAddress = http://localhost:5102
+
+GET {{MajornaGameStore.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

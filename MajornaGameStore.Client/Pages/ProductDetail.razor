@@ -1,0 +1,97 @@
+﻿@page "/productDetail/{Id}"
+@inject ProductDetailViewModel ViewModel
+@inject ProductViewModel ViewModel2
+@inject NavigationManager NavManager
+@using System.Text.RegularExpressions;
+@using MajornaGameStore.DataAccess.Entities
+@using Microsoft.IdentityModel.Tokens
+
+@if (_pageLoading)
+{
+    <Spinner />
+}
+else
+{
+    <Toasts class="p-3" Messages="messages" AutoHide="true" Delay="3000" Placement="ToastsPlacement.TopRight" />
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-4">
+                <img src="@ViewModel.SelectedProduct.ImageLink" class="img-fluid mb-3" alt="Product Image" />
+            </div>
+            <div class="col-md-8">
+                <h2>@ViewModel.SelectedProduct.Name</h2>
+                <p>@ViewModel.SelectedProduct.Description</p>
+                <p>Utgivelsedatum: @ViewModel.SelectedProduct.ReleaseDate</p>
+                @*     @foreach (var developer in @ViewModel.SelectedProduct.Developers)
+            {
+            <p>Utvecklare: @developer.Name</p>
+            }
+
+            @foreach (var tag in @ViewModel.SelectedProduct.Tags)
+            {
+            <p>Taggar: @tag.Name</p>
+            } *@
+                <p>Åldersgräns: @ViewModel.SelectedProduct.AgeRating</p>
+                <p>Pris: Sek @ViewModel.SelectedProduct.Price</p>
+                <button class="btn btn-success" @onclick="@(async () => { await ViewModel2.AddToCartAsync(ViewModel.SelectedProductDto, 1); ShowMessage(ToastType.Success); })">
+                    Lägg Till I Kundvagn
+                </button>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-md-12">
+                <button class="btn btn-outline-primary float-right" @onclick="() => GoToProducts()">Gå tillbaka till Produkter</button>
+            </div>
+        </div>
+    </div>
+
+}
+
+
+
+@code {
+    bool _pageLoading = true;
+
+    [Parameter]
+    public string Id { get; set; }
+    [Parameter]
+    public string HtmlFix { get; set; }
+
+    private int productId;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            if (int.TryParse(Id, out productId))
+            {
+                await ViewModel.OnInite(productId);
+                _pageLoading = false;
+                StateHasChanged();
+                await base.OnAfterRenderAsync(firstRender);
+               
+            }
+
+
+        }
+
+    }
+
+    List<ToastMessage> messages = new List<ToastMessage>();
+
+    private void ShowMessage(ToastType toastType) => messages.Add(CreateToastMessage(toastType));
+
+    private ToastMessage CreateToastMessage(ToastType toastType)
+        => new ToastMessage
+        {
+            Type = toastType,
+            HelpText = $"{DateTime.Now}",
+            Message = $"Produkt tillagd i kundvagn!",
+        };
+
+    private async Task GoToProducts()
+    {
+        NavManager.NavigateTo($"/products");
+    }
+
+}

@@ -1,0 +1,25 @@
+﻿@page "/admin"
+@inject NavigationManager NavigationManager
+@inject IAccountManagement Acct
+@inherits LayoutComponentBase
+
+<AuthorizeView Roles="Administrator">
+    @Body
+
+</AuthorizeView>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        var isIadmin = await Acct.IsAdmin();
+
+        if (isIadmin == false)
+        {
+            //TODO: Skapa "errorpage" eller "notfound" och navigera dit istället
+            NavigationManager.NavigateTo("/");
+        }
+    }
+
+}

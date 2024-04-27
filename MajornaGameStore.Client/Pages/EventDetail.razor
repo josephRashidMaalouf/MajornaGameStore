@@ -1,0 +1,79 @@
+﻿@page "/eventDetail/{Id}"
+@using MajornaGameStore.Client.Services
+@inject EventDetailViewModel ViewModel
+
+
+@if (_pageLoading)
+{
+    <Spinner/>
+}
+else
+{
+    <Toasts class="p-3" Messages="messages" AutoHide="true" Delay="3000" Placement="ToastsPlacement.TopRight" />
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="event-details">
+                    <h2>@ViewModel.SelectedEvent.Name</h2>
+                    <p><strong>Beskrivning:</strong> @ViewModel.SelectedEvent.Description</p>
+                    <p><strong>Entre pris:</strong> @ViewModel.SelectedEvent.Price KR</p>
+                    <p><strong>Start Datum:</strong> @ViewModel.SelectedEvent.Start</p>
+                    <p><strong>Slut Datum:</strong> @ViewModel.SelectedEvent.End</p>
+                    @if (ViewModel.SelectedEvent.SpotsLeft >= 1)
+                    {
+                        <button id="addToCart" class="btn btn-success" @onclick="@(async () => { await ViewModel.AddToCartAsync(ViewModel.SelectedEvent, 1); ShowMessage(ToastType.Success); })">Lägg till I Kundvagn</button>
+                    }
+                    @if (ViewModel.SelectedEvent.SpotsLeft == 0)
+                    {
+                        <button id="disabledBtn" class="btn btn-outline-secondary disabled">Lägg Till I Kundvagn</button>
+                    }
+                    <div style="color: darkred">@ViewModel.SelectedEvent.SpotsLeft biljetter kvar!</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <img src="Images/MAJORNA-LAN.png" class="img-fluid rounded" style="max-height: 400px;" alt="Majorna Lan" />
+            </div>
+        </div>
+    </div>
+
+    
+}
+
+
+@code {
+    bool _pageLoading = true;
+
+    [Parameter]
+    public string Id { get; set; }
+
+    private int eventId;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            if (int.TryParse(Id, out eventId))
+            {
+                await ViewModel.OnInite(eventId);
+                _pageLoading = false;
+                StateHasChanged();
+                await base.OnAfterRenderAsync(firstRender);
+            }
+           
+            
+        }
+        
+    }
+    List<ToastMessage> messages = new List<ToastMessage>();
+
+    private void ShowMessage(ToastType toastType) => messages.Add(CreateToastMessage(toastType));
+
+    private ToastMessage CreateToastMessage(ToastType toastType)
+        => new ToastMessage
+        {
+            Type = toastType,
+            HelpText = $"{DateTime.Now}",
+            Message = $"Produkt tillagd i kundvagn!",
+        };
+  
+}

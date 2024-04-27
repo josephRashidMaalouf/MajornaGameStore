@@ -1,0 +1,424 @@
+﻿@page "/adminproduct"
+@inject IAccountManagement Acct
+@inject NavigationManager NavigationManager
+@inject AdminProductViewModel ViewModel
+
+
+
+@if (_pageLoading)
+{
+    <div class="text-center">
+        <p>Laddar in produkter ...</p>
+        <Spinner/>
+    </div>
+}
+else
+{
+
+    <div class="card p-3 mb-3">
+        <Button id="addNewProdOpenModalBtn" class="btn-success mb-3" @onclick="OnShowModalClick2">Lägg till ny produkt</Button>
+
+        <Grid
+            TItem="ProductDto"
+            AllowSorting="true"
+            Class="table table-hover table-bordered table-striped"
+            DataProvider="ProductsDataProvider"
+            Responsive="true">
+
+            <GridColumn TItem="ProductDto" HeaderText="Id" SortKeySelector="item => item.Id">
+                @context.Id
+            </GridColumn>
+
+            <GridColumn TItem="ProductDto" HeaderText="Namn" SortKeySelector="item => item.Name">
+                @context.Name
+            </GridColumn>
+
+            <GridColumn TItem="ProductDto" HeaderText="Pris" SortKeySelector="item => item.Price">
+                @context.Price
+            </GridColumn>
+
+            <GridColumn TItem="ProductDto" HeaderText="Kategori Id" SortKeySelector="item => item.ProductTypeId">
+                @context.ProductTypeId
+                <Button class="btn-primary" @onclick="async () => await OnShowModalClick(context.Id)">Redigera</Button>
+                <Button class="btn-danger" id="DeleteProdBtn" @onclick="async () => await ViewModel.DeleteProductAsync(context.Id)">Radera</Button>
+            </GridColumn>
+
+
+
+        </Grid>
+    </div>
+
+
+    @* <div class="card p-3 mb-3">
+        <Button id="addNewProdOpenModalBtn" class="btn-success" @onclick="OnShowModalClick2">Lägg till ny produkt</Button>
+        <h3 class="text-center mb-3">Välj en produkt att redigera</h3>
+
+        <ul class="list-group">
+            <Virtualize Items="ViewModel.Models">
+                <li class="list-group-item">
+                    <p>@context.Name</p>
+                    <Button class="btn-primary" @onclick="async () => await OnShowModalClick(context.Id)">Redigera</Button>
+                    <Button class="btn-danger" id="DeleteProdBtn" @onclick="async () => await ViewModel.DeleteProductAsync(context.Id)">Radera</Button>
+                </li>
+            </Virtualize>
+        </ul>
+
+    </div> *@
+}
+
+<Modal @ref="modal2" Title="Lägg till produkt" Size="ModalSize.Large">
+
+    <BodyTemplate>
+        <div class="card p-3 mb-3">
+            <EditForm Model="ViewModel.NewProduct">
+                <DataAnnotationsValidator />
+                <div class="mb-3">
+                    <h3>Allmän info om produkten</h3>
+                </div>
+                <div class="mb-3">
+                    <p>Produktens namn: </p>
+                    <InputText type="text" class="form-control" id="addProdName" Placeholder="Namn" @bind-Value="ViewModel.NewProduct.Name" />
+                    <ValidationMessage For="() => ViewModel.NewProduct.Name" />
+                </div>
+                <div class="mb-3">
+                    <p>Pris: </p>
+                    <InputNumber type="double" class="form-control" id="addProdPrice" Placeholder="Pris" @bind-Value="ViewModel.NewProduct.Price" />
+                    <ValidationMessage For="() => ViewModel.NewProduct.Price" />
+                </div>
+                <div class="mb-3">
+                    <p>Beskrivning: </p>
+                    <InputTextArea type="text" class="form-control" id="addProdDesc" Placeholder="Beskrivning" @bind-Value="ViewModel.NewProduct.Description" />
+                    <ValidationMessage For="() => ViewModel.NewProduct.Description" />
+                </div>
+                <div class="mb-3">
+                    <p>Tillgängliga språk:</p>
+                    <InputText type="text" class="form-control" id="addProdLang" Placeholder="Språk" @bind-Value="ViewModel.NewProduct.Languages" />
+                    <ValidationMessage For="() => ViewModel.NewProduct.Languages" />
+                </div>
+                <div class="mb-3">
+                    <p>Systemkrav: </p>
+                    <InputTextArea type="text" class="form-control" id="addProdSpecs" Placeholder="Systemkrav" @bind-Value="ViewModel.NewProduct.PcRequirements" />
+                    <ValidationMessage For="() => ViewModel.NewProduct.PcRequirements" />
+                </div>
+                <div class="mb-3">
+                    <p>Utgivningsdatum: </p>
+                    <DateInput class="form-control"
+                               Placeholder="Utgivningsdatum" id="addProdDate"
+                               @bind-Value="ViewModel.NewProduct.ReleaseDate" />
+                    <ValidationMessage For="() => ViewModel.NewProduct.ReleaseDate" />
+                </div>
+                <div class="mb-3">
+                    <p>Åldersgräns:</p>
+                    <InputNumber type="int" class="form-control" id="addProdAgeRating" Placeholder="Åldersgräns" @bind-Value="ViewModel.NewProduct.AgeRating" />
+                    <ValidationMessage For="() => ViewModel.NewProduct.AgeRating" />
+                </div>
+            </EditForm>
+        </div>
+        <div class="card p-3 mb-3">
+            <h3>Produktkategori</h3>
+            <p>Välj produktkategori från listan nedan:</p>
+            <InputSelect id="addProdType" class="form-select mb-3" @bind-Value="ViewModel.SelectedProductTypeUpdateId">
+                <option value="0">Välj en kategori</option>
+                @foreach (var type in ViewModel.ProductTypes)
+                {
+                    <option value="@type.Id">@type.Name</option>
+                }
+            </InputSelect>
+            <p>Produktkategori: @ViewModel.NewProduct.ProductType.Name</p>
+            <Button class="btn-success" id="AddProdTypeUpdateSaveBtn"
+                    @onclick="ViewModel.AddUpdateProductTypeAsync">
+                Lägg till produkttyp
+            </Button>
+
+        </div>
+        <div class="card p-3 mb-3">
+            <h3>Spelutvecklare</h3>
+            <ul class="list-group" id="addProdDevList">
+                @foreach (var dev in ViewModel.NewProduct.Developers)
+                {
+                    <li class="list-group-item">
+                        @dev.Name
+                        <Button class="btn-danger" id="addremoveDevBtn" @onclick="async () => await ViewModel.AddRemoveDeveloperAsync(dev)">
+                            <Icon Name="IconName.Trash"></Icon>
+                        </Button>
+                    </li>
+
+                }
+            </ul>
+            <p>Lägg till en spelutvecklare:</p>
+            <InputText type="text" placeholder="Spelutvecklarens namn"
+                       id="addCreateNewDevNameField"
+                       class="form-control mb-3"
+                       @bind-Value="ViewModel.NewDeveloper.Name"></InputText>
+            <Button class="btn-success" id="addEditProdDevUpdateBtn"
+                    @onclick="ViewModel.AddAddNewDeveloperToProductAsync">
+                Lägg till ny spelutvecklare
+            </Button>
+
+        </div>
+        <div class="card p-3 mb-3">
+            <h3>Utgivare</h3>
+            <ul class="list-group" id="addeditProdPublisherList">
+                @foreach (var publisher in ViewModel.NewProduct.Publishers)
+                {
+                    <li class="list-group-item">
+                        @publisher.Name
+                        <Button class="btn-danger" id="addremovePublisherBtn" @onclick="async () => await ViewModel.AddRemovePublisherAsync(publisher)">
+                            <Icon Name="IconName.Trash"></Icon>
+                        </Button>
+                    </li>
+
+                }
+            </ul>
+            <p>Lägg till en utgivare:</p>
+            <InputText type="text" placeholder="Utgivarens namn"
+                       id="addcreateNewPublisherNameField"
+                       class="form-control mb-3"
+                       @bind-Value="ViewModel.NewPublisher.Name"></InputText>
+            <Button class="btn-success" id="addeditProdPublisherUpdateBtn"
+                    @onclick="ViewModel.AddAddNewPublisherToProductAsync">
+                Lägg till ny spelutvecklare
+            </Button>
+
+        </div>
+        <div class="card p-3 mb-3">
+            <h3>Produkttaggar</h3>
+            <p>Nuvarande produkttaggar: </p>
+            <ul class="list-group" id="editProdTagsList">
+                @foreach (var tag in ViewModel.NewProduct.Tags)
+                {
+                    <li class="list-group-item">
+                        @tag.Name
+                        <Button class="btn-danger" id="addRemoveTagBtn" @onclick="async () => await ViewModel.AddRemoveTagAsync(tag)">
+                            <Icon Name="IconName.Trash"></Icon>
+                        </Button>
+                    </li>
+
+                }
+            </ul>
+            <p>Lägg till ny tag från listan nedan:</p>
+            <InputSelect id="addeditProdTag" class="form-select mb-3" @bind-Value="ViewModel.SelectedTagToUpdateId">
+                <option value="0">Välj en tag</option>
+                @foreach (var type in ViewModel.ProductTags)
+                {
+                    <option value="@type.Id">@type.Name</option>
+                }
+            </InputSelect>
+            <Button class="btn-success" id="addeditProdTagUpdateSaveBtn"
+                    @onclick="ViewModel.AddUpdateProductTagAsync">
+                Lägg till tag
+            </Button>
+
+        </div>
+        <Button class="btn-success" id="addNewProdBtn" @onclick="ViewModel.AddNewProductAsync">Lägg till produkt</Button>
+        @*REA nedan*@
+        @*Bild?*@
+
+
+    </BodyTemplate>
+
+
+</Modal>
+
+<Modal @ref="modal" Title="Redigera produkt" Size="ModalSize.Large">
+    
+    <BodyTemplate>
+        <div class="card p-3 mb-3">
+            <EditForm Model="ViewModel.SelectedProduct" OnValidSubmit="ViewModel.SaveUpdateChangesAsync">
+                <DataAnnotationsValidator/>
+                <div class="mb-3">
+                    <h3>Redigera allmän info om produkten</h3>
+                </div>
+                <div class="mb-3">
+                    <p>Redigera produktens namn: </p>
+                    <InputText type="text" class="form-control" id="editProdName" Placeholder="Redigera namn" @bind-Value="ViewModel.SelectedProduct.Name"/>
+                    <ValidationMessage For="() => ViewModel.SelectedProduct.Name"/>
+                </div>
+                <div class="mb-3">
+                    <p>Redigera pris: </p>
+                    <InputNumber type="double" class="form-control" id="editProdPrice" Placeholder="Redigera pris" @bind-Value="ViewModel.SelectedProduct.Price"/>
+                    <ValidationMessage For="() => ViewModel.SelectedProduct.Price"/>
+                </div> 
+                <div class="mb-3">
+                    <p>Redigera beskrivning: </p>
+                    <InputTextArea type="text" class="form-control" id="editProdDesc" Placeholder="Redigera beskrivning" @bind-Value="ViewModel.SelectedProduct.Description" />
+                    <ValidationMessage For="() => ViewModel.SelectedProduct.Description" />
+                </div>
+                <div class="mb-3">
+                    <p>Redigera tillgängliga språk:</p>
+                    <InputText type="text" class="form-control" id="editProdLang" Placeholder="Redigera språk" @bind-Value="ViewModel.SelectedProduct.Languages" />
+                    <ValidationMessage For="() => ViewModel.SelectedProduct.Languages" />
+                </div>
+                <div class="mb-3">
+                    <p>Redigera systemkrav: </p>
+                    <InputTextArea type="text" class="form-control" id="editProdSpecs" Placeholder="Redigera systemkrav" @bind-Value="ViewModel.SelectedProduct.PcRequirements" />
+                    <ValidationMessage For="() => ViewModel.SelectedProduct.PcRequirements" />
+                </div>
+                <div class="mb-3">
+                    <p>Redigera utgivningsdatum: </p>
+                    <DateInput class="form-control" 
+                               Placeholder="Redigera utgivningsdatum" id="editProdDate"
+                               @bind-Value="ViewModel.SelectedProduct.ReleaseDate" />
+                    <ValidationMessage For="() => ViewModel.SelectedProduct.ReleaseDate" />
+                </div>
+                <div class="mb-3">
+                    <p>Redigera åldersgräns:</p>
+                    <InputNumber type="int" class="form-control" id="editProdAgeRating"  Placeholder="Redigera åldersgräns" @bind-Value="ViewModel.SelectedProduct.AgeRating" />
+                    <ValidationMessage For="() => ViewModel.SelectedProduct.AgeRating" />
+                </div>
+                <button type="submit" id="editProdGeneralSave" class="btn btn-success">Uppdatera allmän info</button>
+            </EditForm>
+        </div>
+        <div class="card p-3 mb-3">
+            <h3>Redigera produktkategori</h3>
+            <p>Nuvarande produktkategori: @ViewModel.SelectedProduct.ProductType</p>
+            <p>Välj ny produktkategori från listan nedan:</p>
+            <InputSelect id="editProdType" class="form-select mb-3" @bind-Value="ViewModel.SelectedProductTypeUpdateId">
+                <option value="0">Välj en kategori</option>
+                @foreach (var type in ViewModel.ProductTypes)
+                {
+                    <option value="@type.Id">@type.Name</option>
+                }
+            </InputSelect>
+            <Button class="btn-success" id="editProdTypeUpdateSaveBtn"
+                    @onclick="ViewModel.UpdateProductTypeAsync">Uppdatera produkttyp</Button>
+
+        </div>
+        <div class="card p-3 mb-3">
+            <h3>Redigera spelutvecklare</h3>
+            <ul class="list-group" id="editProdDevList">
+                @foreach (var dev in ViewModel.SelectedProduct.Developers)
+                {
+                    <li class="list-group-item">
+                       @dev.Name
+                        <Button class="btn-danger" id="removeDevBtn" @onclick="async () => await ViewModel.RemoveDeveloperAsync(dev)">
+                            <Icon Name="IconName.Trash"></Icon>
+                        </Button>
+                    </li>
+                    
+                }
+            </ul>
+            <p>Lägg till en spelutvecklare:</p>
+            <InputText type="text" placeholder="Spelutvecklarens namn"
+                       id="createNewDevNameField"
+                       class="form-control mb-3"
+                       @bind-Value="ViewModel.NewDeveloper.Name"></InputText>
+            <Button class="btn-success" id="editProdDevUpdateBtn"
+                    @onclick="ViewModel.AddNewDeveloperToProductAsync">Lägg till ny spelutvecklare</Button>
+
+        </div>
+        <div class="card p-3 mb-3">
+            <h3>Redigera utgivare</h3>
+            <ul class="list-group" id="editProdPublisherList">
+                @foreach (var publisher in ViewModel.SelectedProduct.Publishers)
+                {
+                    <li class="list-group-item">
+                        @publisher.Name
+                        <Button class="btn-danger" id="removePublisherBtn" @onclick="async () => await ViewModel.RemovePublisherAsync(publisher)">
+                            <Icon Name="IconName.Trash"></Icon>
+                        </Button>
+                    </li>
+                    
+                }
+            </ul>
+            <p>Lägg till en utgivare:</p>
+            <InputText type="text" placeholder="Utgivarens namn"
+                       id="createNewPublisherNameField"
+                       class="form-control mb-3"
+                       @bind-Value="ViewModel.NewPublisher.Name"></InputText>
+            <Button class="btn-success" id="editProdPublisherUpdateBtn"
+                    @onclick="ViewModel.AddNewPublisherToProductAsync">Lägg till ny spelutvecklare</Button>
+
+        </div>
+        <div class="card p-3 mb-3">
+            <h3>Redigera produkttaggar</h3>
+            <p>Nuvarande produkttaggar: </p>
+            <ul class="list-group" id="editProdTagsList">
+                @foreach (var tag in ViewModel.SelectedProduct.Tags)
+                {
+                    <li class="list-group-item">
+                        @tag.Name
+                        <Button class="btn-danger" id="removeTagBtn" @onclick="async () => await ViewModel.RemoveTagAsync(tag)">
+                            <Icon Name="IconName.Trash"></Icon>
+                        </Button>
+                    </li>
+
+                }
+            </ul>
+            <p>Lägg till ny tag från listan nedan:</p>
+            <InputSelect id="editProdTag" class="form-select mb-3" @bind-Value="ViewModel.SelectedTagToUpdateId">
+                <option value="0">Välj en tag</option>
+                @foreach (var type in ViewModel.ProductTags)
+                {
+                    <option value="@type.Id">@type.Name</option>
+                }
+            </InputSelect>
+            <Button class="btn-success" id="editProdTagUpdateSaveBtn"
+                    @onclick="ViewModel.UpdateProductTagAsync">
+                Lägg till tag
+            </Button>
+
+        </div>
+            @*REA nedan*@
+            @*Bild?*@
+        
+
+    </BodyTemplate>
+    
+
+</Modal>
+
+
+@code {
+    bool _pageLoading = true;
+    private Modal modal;
+    private Modal modal2;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        var isIadmin = await Acct.IsAdmin();
+
+        if (isIadmin == false)
+        {
+            //TODO: Skapa "errorpage" eller "notfound" och navigera dit istället
+            NavigationManager.NavigateTo("/");
+        }
+
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+
+        if (firstRender)
+        {
+            await ViewModel.OnInit();
+            _pageLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task<GridDataProviderResult<ProductDto>> ProductsDataProvider(GridDataProviderRequest<ProductDto> request)
+    {
+        return await Task.FromResult(request.ApplyTo(ViewModel.Models));
+    }
+
+    private async Task OnShowModalClick(int selectedProductId)
+    {
+        await ViewModel.SetSelectedProduct(selectedProductId);
+        await modal?.ShowAsync();
+    }
+    private async Task OnShowModalClick2()
+    {
+        await modal2?.ShowAsync();
+    }
+
+    private async Task OnHideModalClick()
+    {
+        await ViewModel.OnInit();
+        await modal?.HideAsync();
+    }
+
+}
